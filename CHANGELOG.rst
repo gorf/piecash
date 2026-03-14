@@ -11,6 +11,9 @@ Version 1.2.2 (unreleased)
 - fix SyntaxWarning for invalid escape sequence in book.py docstring (fix #249)
 - fix get_balance for stock accounts with at_date: use price at or before at_date for conversion (fix #209)
 - fix ledger export: omit thousand separators for ledger-cli compatibility (fix #238)
+- bump certifi 2023.7.22 -> 2024.7.4 (from PR #233)
+- bump zipp 3.3.1 -> 3.19.1 (from PR #234)
+- bump ipython 7.16.1 -> 8.10.0 (from PR #239)
 
 Version 1.2.1 (2024-07-14)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
