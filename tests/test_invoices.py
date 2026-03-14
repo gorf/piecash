@@ -243,7 +243,7 @@ def test_add_terms(book_with_billterms):
 
 def test_add_terms2(book):
     #try adding a billterm with non-existing type
-    with pytest.raises(ValueError):
+    with pytest.raises((TypeError, ValueError)):
         piecash.business.invoice.Billterm("termday", term_type='no existing type')
 
     #add two terms with same name

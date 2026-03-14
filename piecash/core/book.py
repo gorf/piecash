@@ -502,7 +502,7 @@ class Book(DeclarativeBaseGuid):
         """
         from ..business import Taxtable
 
-        return CallableList(self.session.query(Taxtable).filter(Taxtable.invisible==False))
+        return CallableList(self.session.query(Taxtable).filter(Taxtable.invisible == 0))
 
     @property
     def billterms(self):

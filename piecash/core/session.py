@@ -338,7 +338,7 @@ def create_book(
     
     if currency == "locale":
         locale.setlocale(locale.LC_ALL, '')
-        currency = locale.localeconv()['int_curr_symbol']
+        currency = locale.localeconv()['int_curr_symbol'].strip() or 'EUR'
 
     b.root_account = Account(
         name="Root Account",
