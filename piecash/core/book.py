@@ -327,12 +327,16 @@ class Book(DeclarativeBaseGuid):
     def close(self):
         """Close a session. Any changes not yet saved are rolled back. Any lock on the file/DB is released."""
         session = self.session
+        engine = getattr(session, "bind", None)
         # cancel pending changes
         session.rollback()
         # if self._acquire_lock:
         # # remove the lock
         # session.delete_lock()
         session.close()
+        # Release engine connection pool (needed for PostgreSQL/MySQL before DROP DATABASE)
+        if engine is not None:
+            engine.dispose()
 
     # add general getters for gnucash classes
     def get(self, cls, **kwargs):
