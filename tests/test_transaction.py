@@ -235,7 +235,8 @@ class TestTransaction_create_transaction(object):
             )
 
     def test_create_cdtytransaction_cdtycurrency(self, book_basic):
-        """Non-currency (stock) transactions are allowed since PR #166."""
+        """Non-currency (stock) transactions are allowed since PR #166.
+        When account commodity == transaction currency, value must equal quantity."""
         racc = book_basic.root_account
         a = book_basic.accounts(name="asset")
         s = book_basic.accounts(name="broker")
@@ -247,8 +248,8 @@ class TestTransaction_create_transaction(object):
             post_date=date(2014, 1, 2),
             enter_date=datetime(2014, 1, 3),
             splits=[
-                Split(account=a, value=100, quantity=10, memo="mémo asset"),
-                Split(account=s, value=-100, quantity=-10, memo="mémo brok"),
+                Split(account=a, value=10, quantity=10, memo="mémo asset"),
+                Split(account=s, value=-10, quantity=-10, memo="mémo brok"),
             ],
         )
         book_basic.validate()
