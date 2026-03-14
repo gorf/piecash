@@ -266,7 +266,12 @@ class TestAccount_features(object):
         assert len(xyz_account.lots) == 3           # all lots should be associated with xyz_account
         assert len(new_book.session.query(Slot).all()) == 37    # start with 5 (date posted for transactions above)
                                                                 # and 32 created during scrubbing
-        # Check the lots' quantities and values
+        # Check the lots' quantities and values; sort for deterministic order (PG/MySQL)
+        def lot_sort_key(lot):
+            val = sum(split.value for split in lot.splits if split.quantity == 0)
+            # Use -val so lots with same quantity order as: 10, -12, -11 (tr1, tr2, tr3)
+            return (lot.quantity, -val)
+        lots = sorted(lots, key=lot_sort_key)
         quantities = [0, 0, 5]
         values = [10, -12, -11]
         for i, lot in enumerate(lots):
