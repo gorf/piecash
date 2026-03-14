@@ -276,10 +276,10 @@ class TestTransaction_create_transaction(object):
         book_basic.validate()
 
         assert "{}".format(tr) == "Transaction<[EUR] 'buy stock' on 2014-01-02>"
-        assert "{}".format(s) == "Account<asset:broker[ïoà]>"
+        assert "{}".format(s) == "Account<asset:broker[\u00efo\u00e0]>"
         assert (
             "{}".format(tr.splits(account=s))
-            == "Split<Account<asset:broker[ïoà]> -100 EUR [-15 ïoà]>"
+            == "Split<Account<asset:broker[\u00efo\u00e0]> -100 EUR [-15 \u00efo\u00e0]>"
         )
         assert "{}".format(tr.splits(account=a)) == "Split<Account<asset[EUR]> 100 EUR>"
 

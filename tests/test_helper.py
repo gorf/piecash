@@ -1,4 +1,4 @@
-# -*- coding: latin-1 -*-
+# -*- coding: utf-8 -*-
 import os
 from datetime import date
 from pathlib import PurePath, Path
@@ -276,7 +276,9 @@ def book_basic(request):
         # create some accounts
         curr = b.currencies[0]
         cdty = Commodity(
-            namespace=u"ùchange", mnemonic=u"ùoù", fullname=u"Example of unicode dùta"
+            namespace=u"\u00e9change",  # √©change
+            mnemonic=u"\u00efo\u00e0",  # √Øo√†
+            fullname=u"Example of unicode d\u00e9ta",  # d√©ta
         )
         a = Account(name="asset", type="ASSET", commodity=curr, parent=b.root_account)
         Account(name="broker", type="STOCK", commodity=cdty, parent=a)
