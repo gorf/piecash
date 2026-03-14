@@ -9,8 +9,8 @@ piecash
    :alt: Join the chat at https://gitter.im/sdementen/piecash
    :target: https://gitter.im/sdementen/piecash?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
-.. image:: https://github.com/sdementen/piecash/workflows/CI/badge.svg
-    :target: https://github.com/sdementen/piecash/actions
+.. image:: https://github.com/gorf/piecash/workflows/CI/badge.svg
+    :target: https://github.com/gorf/piecash/actions
 
 .. image:: https://readthedocs.org/projects/piecash/badge/?version=master
     :target: http://piecash.readthedocs.org
