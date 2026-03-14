@@ -314,10 +314,8 @@ class Transaction(DeclarativeBaseGuid):
         if old["STATE_CHANGES"][-1] == "deleted":
             return
 
-        if not self.currency.is_currency():
-            raise GncValidationError(
-                "You are assigning a non currency commodity to a transaction"
-            )
+        # Currency validation removed: GnuCash allows non-currency (e.g. stock)
+        # transfers between accounts (from PR #166, @holymonson)
 
         # check all accounts related to the splits of the transaction are not placeholder(=frozen)
         for sp in self.splits:

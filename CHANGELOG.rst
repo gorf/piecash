@@ -15,6 +15,8 @@ Version 1.2.2 (unreleased)
 - bump zipp 3.3.1 -> 3.19.1 (from PR #234)
 - bump ipython 7.16.1 -> 8.10.0 (from PR #239)
 - add FIFO lot sorting for splits in accounts (from PR #237, @akjore)
+- improve docs: declare open_book as piecash function (from PR #171, @flywire)
+- allow non-currency transactions e.g. stock transfers between accounts (from PR #166, @holymonson)
 
 Version 1.2.1 (2024-07-14)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~

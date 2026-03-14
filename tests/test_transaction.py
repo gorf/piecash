@@ -235,7 +235,7 @@ class TestTransaction_create_transaction(object):
             )
 
     def test_create_cdtytransaction_cdtycurrency(self, book_basic):
-        EUR = book_basic.commodities(namespace="CURRENCY")
+        """Non-currency (stock) transactions are allowed since PR #166."""
         racc = book_basic.root_account
         a = book_basic.accounts(name="asset")
         s = book_basic.accounts(name="broker")
@@ -251,9 +251,8 @@ class TestTransaction_create_transaction(object):
                 Split(account=s, value=-100, quantity=-10, memo="mémo brok"),
             ],
         )
-        # raise error as Transaction has a non CURRENCY commodity
-        with pytest.raises(GncValidationError):
-            book_basic.validate()
+        book_basic.validate()
+        assert tr.currency == s.commodity
 
     def test_create_cdtytransaction_tradingaccount(self, book_basic):
         EUR = book_basic.commodities(namespace="CURRENCY")
