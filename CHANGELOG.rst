@@ -18,6 +18,7 @@ Version 1.2.2 (unreleased)
 - improve docs: declare open_book as piecash function (from PR #171, @flywire)
 - allow non-currency transactions e.g. stock transfers between accounts (from PR #166, @holymonson)
 - add CSV import/export examples for bank transactions (from PR #172, @flywire)
+- CI: install ledger deps (babel, money), set LC_ALL for locale-sensitive tests
 
 Version 1.2.1 (2024-07-14)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
