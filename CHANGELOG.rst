@@ -10,6 +10,7 @@ Version 1.2.2 (unreleased)
 - add community maintenance note to README
 - fix SyntaxWarning for invalid escape sequence in book.py docstring (fix #249)
 - fix get_balance for stock accounts with at_date: use price at or before at_date for conversion (fix #209)
+- fix ledger export: omit thousand separators for ledger-cli compatibility (fix #238)
 
 Version 1.2.1 (2024-07-14)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
