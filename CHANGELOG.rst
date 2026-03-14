@@ -17,6 +17,7 @@ Version 1.2.2 (unreleased)
 - add FIFO lot sorting for splits in accounts (from PR #237, @akjore)
 - improve docs: declare open_book as piecash function (from PR #171, @flywire)
 - allow non-currency transactions e.g. stock transfers between accounts (from PR #166, @holymonson)
+- add CSV import/export examples for bank transactions (from PR #172, @flywire)
 
 Version 1.2.1 (2024-07-14)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~

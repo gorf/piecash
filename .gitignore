@@ -49,3 +49,6 @@ pip-log.txt
 tests/foozbar.sqlite
 tests/foofailzbar.sqlite
 tests/*.gnucash
+
+# example output
+gnucash_books/*.gnucash

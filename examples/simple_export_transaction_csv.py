@@ -23,10 +23,13 @@ with open_book(GNUCASH_BOOK, readonly=True, open_if_lock=True) as book:
                     if transaction.post_date.year != REPORTING_YEAR:
                         continue
 
+                    if len(transaction.splits) < 1:
+                        continue
+
                     # strip transfer account names for multisplits
+                    split_one = transaction.splits[0]
                     if len(transaction.splits) == 2:
-                        # assign the two splits of the transaction
-                        split_one, split_two = transaction.splits
+                        split_two = transaction.splits[1]
                         transfer_account = split_two.account.fullname
                     else:
                         transfer_account = ""
@@ -37,12 +40,12 @@ with open_book(GNUCASH_BOOK, readonly=True, open_if_lock=True) as book:
                             fields,
                             [
                                 transaction.post_date.strftime("%d/%m/%y"),
-                                transaction.num,
-                                transaction.notes,
+                                transaction.num or "",
+                                transaction.notes or "",
                                 split_one.value,
                                 split_one.account.get_balance(),
                                 transfer_account,
-                                transaction.description,
+                                transaction.description or "",
                             ],
                         )
                     )

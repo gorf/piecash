@@ -17,12 +17,9 @@ def open_gnucash_book(GNUCASH_BOOK, **kwargs):
             **kwargs,
         )
     else:
-        # create book file
-        book = create_book(
-            GNUCASH_BOOK,
-            currency=locale.localeconv()["int_curr_symbol"],
-            **kwargs,
-        )
+        # create book file; int_curr_symbol is e.g. "EUR " (3 chars + space)
+        curr = locale.localeconv()["int_curr_symbol"].strip() or "EUR"
+        book = create_book(GNUCASH_BOOK, currency=curr, **kwargs)
         print("Created: ", GNUCASH_BOOK)
     return book
 
