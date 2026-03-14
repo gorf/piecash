@@ -20,6 +20,8 @@ Version 1.2.2 (unreleased)
 - add CSV import/export examples for bank transactions (from PR #172, @flywire)
 - CI: install ledger deps (babel, money), set LC_ALL for locale-sensitive tests
 - CI: drop Python 3.7 (not available on Ubuntu 24.04)
+- fix placeholder/hidden: normalize bool to int for PostgreSQL/MySQL (test_scrub)
+- test_scrub: avoid order-dependent assertion for MySQL
 
 Version 1.2.1 (2024-07-14)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~

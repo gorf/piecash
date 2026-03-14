@@ -232,8 +232,9 @@ class Account(DeclarativeBaseGuid):
         self.type = type
         self.parent = parent
         self.description = description
-        self.hidden = hidden
-        self.placeholder = placeholder
+        # PostgreSQL/MySQL expect integer; normalize bool to 0/1
+        self.hidden = 1 if hidden else 0
+        self.placeholder = 1 if placeholder else 0
         self.code = code
         self.commodity_scu = commodity_scu
         if children:

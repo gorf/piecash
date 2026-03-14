@@ -146,7 +146,7 @@ class TestAccount_create_account(object):
         racc = new_book.root_account
 
         # create normal account
-        acc = Account(name=u"inouï¿½ ï¿½trange", type="ASSET", commodity=EUR, parent=racc)
+        acc = Account(name=u"inou trange", type="ASSET", commodity=EUR, parent=racc)
         new_book.flush()
         assert len(new_book.accounts) == 1
         assert len(repr(acc)) >= 2
@@ -278,13 +278,15 @@ class TestAccount_features(object):
         new_transactions = [tr for tr in new_book.transactions if tr not in original_transactions]
         realisation_gains = [split for split in tr4.splits + tr5.splits if split.quantity < 0]
         realised_gains_splits = []
-        for tr in new_transactions:
+        for tr in sorted(new_transactions, key=lambda t: (t.post_date, t.description or "")):
             realised_gains_splits.extend([split for split in tr.splits if split.quantity == 0])
 
         for idx, split in enumerate(realisation_gains):
             assert "gains-split" in split
-            assert split["gains-split"].value == realised_gains_splits[idx]
-            assert realised_gains_splits[idx]["gains-source"].value == split
+            # Order may differ on MySQL; match by identity not index
+            gains_split = split["gains-split"].value
+            assert gains_split in realised_gains_splits
+            assert gains_split["gains-source"].value == split
 
             if idx < 3:
                 assert split["lot-split/date"].value.date() == datetime.today().date()
