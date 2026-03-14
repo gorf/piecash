@@ -83,6 +83,17 @@ class TestAccount_create_account(object):
         assert a.get_balance(at_date=date(2015, 10, 21)) == 1000
         assert a.get_balance(at_date=date(2015, 10, 25)) == 900
 
+    def test_stock_account_balance_uses_price_at_date(self, book_transactions):
+        """Stock balance conversion should use price at or before at_date (fix #209)."""
+        from decimal import Decimal
+
+        stock = book_transactions.accounts(name="broker")
+        curr = book_transactions.default_currency
+        # 6 shares bought on 2015-10-29. Price EUR at 2015-11-2 = 2.34
+        # At 2015-11-3, must use price from 11-2 (not future 11-4)
+        balance_eur = stock.get_balance(commodity=curr, at_date=date(2015, 11, 3))
+        assert balance_eur == Decimal("14.04")  # 6 * 2.34
+
     def test_create_standardliability_account(self, new_book):
         EUR = new_book.commodities[0]
         racc = new_book.root_account

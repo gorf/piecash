@@ -9,6 +9,7 @@ Version 1.2.2 (unreleased)
 - upgrade GitHub Actions (checkout@v4, setup-python@v5)
 - add community maintenance note to README
 - fix SyntaxWarning for invalid escape sequence in book.py docstring (fix #249)
+- fix get_balance for stock accounts with at_date: use price at or before at_date for conversion (fix #209)
 
 Version 1.2.1 (2024-07-14)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~

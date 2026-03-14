@@ -302,8 +302,10 @@ class Account(DeclarativeBaseGuid):
         expressed in account's commodity/currency.
         If this is a stock/fund account, it will return the number of shares held.
         If this is a currency account, it will be in account's currency.
-        In case of recursion, the commodity of children accounts will be transformed to the commodity of the father account using the latest price
-        (if no price is available to convert , it is considered as 0).
+        In case of recursion, the commodity of children accounts will be transformed to
+        the commodity of the father account using the latest price (or the most recent
+        price on or before at_date if at_date is given). If no price is available to
+        convert, it is considered as 0.
         If natural_sign is True, the sign of the balance is reverted for the account with type {'LIABILITY', 'PAYABLE', 'CREDIT', 'INCOME', 'EQUITY'}
 
         Attributes:
@@ -332,12 +334,16 @@ class Account(DeclarativeBaseGuid):
         if balance and commodity != self.commodity:
             try:
                 # conversion is done directly from self.commodity to commodity (if possible)
-                factor = self.commodity.currency_conversion(commodity)
+                factor = self.commodity.currency_conversion(commodity, at_date=at_date)
                 balance = balance * factor
             except GncConversionError:
                 # conversion is done from self.commodity to self.parent.commodity and then to commodity
-                factor1 = self.commodity.currency_conversion(self.parent.commodity)
-                factor2 = self.parent.commodity.currency_conversion(commodity)
+                factor1 = self.commodity.currency_conversion(
+                    self.parent.commodity, at_date=at_date
+                )
+                factor2 = self.parent.commodity.currency_conversion(
+                    commodity, at_date=at_date
+                )
                 factor = factor1 * factor2
                 balance = balance * factor
 

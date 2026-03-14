@@ -235,27 +235,43 @@ class Commodity(DeclarativeBaseGuid):
     def is_currency(self):
         return self.namespace == "CURRENCY"
 
-    def currency_conversion(self, currency):
+    def currency_conversion(self, currency, at_date=None):
         """
-        Return the latest conversion factor to convert self to currency
+        Return the conversion factor to convert self to currency.
 
         Attributes:
-            currency (:class:`piecash.core.commodity.Commodity`): the currency to which the Price need to be converted
+            currency (:class:`piecash.core.commodity.Commodity`): the currency to
+                which the Price need to be converted
+            at_date (:class:`datetime.date` or :class:`datetime.datetime`, optional):
+                if given, use the most recent price on or before this date.
+                If None, use the latest available price.
 
         Returns:
-            a Decimal that can be multiplied by an amount expressed in self.commodity to get an amount expressed in currency
+            a Decimal that can be multiplied by an amount expressed in self.commodity
+            to get an amount expressed in currency
 
         Raises:
             GncConversionError: not possible to convert self to the currency
 
         """
-        # conversion is done from self.commodity to commodity (if possible)
-        sc2c = self.prices.filter_by(currency=currency).order_by(Price.date.desc()).first()
+        # Normalize at_date to date for price comparison
+        if at_date is not None and hasattr(at_date, "date"):
+            at_date = at_date.date()
+
+        def price_query(prices, curr):
+            q = prices.filter_by(currency=curr)
+            if at_date is not None:
+                q = q.filter(Price.date <= at_date)
+            q = q.order_by(Price.date.desc())
+            return q.first()
+
+        # conversion is done from self.commodity to currency (if possible)
+        sc2c = price_query(self.prices, currency)
         if sc2c:
             return sc2c.value
 
-        # conversion is done directly from commodity to self.commodity (if possible)
-        c2sc = currency.prices.filter_by(currency=self).order_by(Price.date.desc()).first()
+        # conversion is done directly from currency to self.commodity (if possible)
+        c2sc = price_query(currency.prices, self)
         if c2sc:
             return Decimal(1) / c2sc.value
 
