@@ -340,7 +340,7 @@ class Book(DeclarativeBaseGuid):
         Generic getter for a GnuCash object in the `GncSession`. If no kwargs is given, it returns the list of all
         objects of type cls (uses the sqlalchemy session.query(cls).all()).
         Otherwise, it gets the unique object which attributes match the kwargs
-        (uses the sqlalchemy session.query(cls).filter_by(\*\*kwargs).one() underneath)::
+        (uses the sqlalchemy session.query(cls).filter_by(\\*\\*kwargs).one() underneath)::
 
             # to get the first account with name="Income"
             inc_account = session.get(Account, name="Income")

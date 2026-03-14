@@ -8,6 +8,7 @@ Version 1.2.2 (unreleased)
 - add Python 3.12 to CI matrix
 - upgrade GitHub Actions (checkout@v4, setup-python@v5)
 - add community maintenance note to README
+- fix SyntaxWarning for invalid escape sequence in book.py docstring (fix #249)
 
 Version 1.2.1 (2024-07-14)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
