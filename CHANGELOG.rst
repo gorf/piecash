@@ -4,6 +4,7 @@ What's new
 Version 1.2.2 (unreleased)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+- support locale currency setting (fix #174)
 - add explicit UTF-8 encoding when reading project files (fix Windows build with non-ASCII paths)
 - add Python 3.12 to CI matrix
 - upgrade GitHub Actions (checkout@v4, setup-python@v5)
