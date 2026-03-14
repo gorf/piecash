@@ -146,6 +146,7 @@ class _DateAsDateTime(types.TypeDecorator):
     """Used to customise the DateTime type for sqlite (ie without the separators as in gnucash"""
 
     impl = types.TypeEngine
+    cache_ok = True
 
     def __init__(self, neutral_time=True, *args, **kwargs):
         super(_DateAsDateTime, self).__init__(*args, **kwargs)

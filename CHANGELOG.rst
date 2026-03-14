@@ -22,6 +22,10 @@ Version 1.2.2 (unreleased)
 - CI: drop Python 3.7 (not available on Ubuntu 24.04)
 - fix placeholder/hidden: normalize bool to int for PostgreSQL/MySQL (test_scrub)
 - test_scrub: avoid order-dependent assertion for MySQL
+- fix PostgreSQL/MySQL test teardown: release engine in Book.close(), safe_drop_database with pg_terminate_backend fallback
+- fix test_scrub lots ordering: sort by (quantity, -val) for deterministic assertion across DB backends
+- fix Unicode in tests: use UTF-8 and \\u escapes for ïoà (test_create_cdtytransaction_tradingaccount)
+- reduce CI warnings: Inspector.from_engine -> inspect(), _DateAsDateTime.cache_ok=True, silence getdefaultlocale deprecation
 
 Version 1.2.1 (2024-07-14)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~

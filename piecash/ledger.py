@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 import json
 import re
 from functools import singledispatch
-from locale import getdefaultlocale
+import warnings
 
 from .core import Account, Book, Commodity, Price, Transaction
 
@@ -68,17 +68,21 @@ def format_currency(
     if not use_grouping:
         return "{} {:.{}f}".format(currency, amount, digits)
     if locale is True:
-        locale = getdefaultlocale()[0]
+        import locale as _locale
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", DeprecationWarning)
+            loc = _locale.getdefaultlocale()[0] or "en_US"
         if BABEL_AVAILABLE is False:
             raise ValueError(
                 f"You must install babel ('pip install babel') to export to ledger in "
-                f"your locale '{locale}'"
+                f"your locale '{loc}'"
             )
         return babel.numbers.format_currency(
             amount,
             currency,
             format=None,
-            locale=locale,
+            locale=loc,
             currency_digits=True,
             format_type="standard",
             decimal_quantization=decimal_quantization,

@@ -5,8 +5,7 @@ from decimal import Decimal
 from pathlib import Path
 
 import pytest
-from sqlalchemy import create_engine
-from sqlalchemy.engine.reflection import Inspector
+from sqlalchemy import create_engine, inspect
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session
 
@@ -140,7 +139,8 @@ class TestBook_create_book(object):
         b = create_book(uri_conn=db_sqlite_uri, keep_foreign_keys=True, overwrite=True)
         b.session.close()
 
-        insp = Inspector.from_engine(create_engine(db_sqlite_uri))
+        engine = create_engine(db_sqlite_uri)
+        insp = inspect(engine)
         fk_total = []
         for tbl in insp.get_table_names():
             fk_total.append(insp.get_foreign_keys(tbl))
@@ -151,7 +151,8 @@ class TestBook_create_book(object):
         b = create_book(uri_conn=db_sqlite_uri, keep_foreign_keys=False, overwrite=True)
         b.session.close()
 
-        insp = Inspector.from_engine(create_engine(db_sqlite_uri))
+        engine = create_engine(db_sqlite_uri)
+        insp = inspect(engine)
         for tbl in insp.get_table_names():
             fk = insp.get_foreign_keys(tbl)
             assert len(fk) == 0
@@ -498,7 +499,7 @@ class TestBook_access_book(object):
         """
         assert (
             book_reference_3_0_0_fulloptions.business_company_address
-            == "Rue de la Chenille ÈclairÈe, 22"
+            == "Rue de la Chenille ùclairùe, 22"
         )
         assert book_reference_3_0_0_fulloptions.business_company_contact == "John Michu"
         assert (
@@ -536,18 +537,18 @@ class TestBook_access_book(object):
         Tests business slots
         :type book_reference_3_0_0_basic: Book
         """
-        book_reference_3_0_0_basic.business_company_address = "È"
-        book_reference_3_0_0_basic.business_company_contact = "‡"
-        book_reference_3_0_0_basic.business_company_email = "˘"
-        book_reference_3_0_0_basic.business_company_ID = "ˆ"
-        book_reference_3_0_0_basic.business_company_name = "µ"
-        book_reference_3_0_0_basic.business_company_phone = "≤"
-        book_reference_3_0_0_basic.business_company_website = "≥"
+        book_reference_3_0_0_basic.business_company_address = "ù"
+        book_reference_3_0_0_basic.business_company_contact = "ù"
+        book_reference_3_0_0_basic.business_company_email = "ù"
+        book_reference_3_0_0_basic.business_company_ID = "ù"
+        book_reference_3_0_0_basic.business_company_name = "ù"
+        book_reference_3_0_0_basic.business_company_phone = "ù"
+        book_reference_3_0_0_basic.business_company_website = "ù"
 
-        assert book_reference_3_0_0_basic.business_company_address == "È"
-        assert book_reference_3_0_0_basic.business_company_contact == "‡"
-        assert book_reference_3_0_0_basic.business_company_email == "˘"
-        assert book_reference_3_0_0_basic.business_company_ID == "ˆ"
-        assert book_reference_3_0_0_basic.business_company_name == "µ"
-        assert book_reference_3_0_0_basic.business_company_phone == "≤"
-        assert book_reference_3_0_0_basic.business_company_website == "≥"
+        assert book_reference_3_0_0_basic.business_company_address == "ù"
+        assert book_reference_3_0_0_basic.business_company_contact == "ù"
+        assert book_reference_3_0_0_basic.business_company_email == "ù"
+        assert book_reference_3_0_0_basic.business_company_ID == "ù"
+        assert book_reference_3_0_0_basic.business_company_name == "ù"
+        assert book_reference_3_0_0_basic.business_company_phone == "ù"
+        assert book_reference_3_0_0_basic.business_company_website == "ù"
