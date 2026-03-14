@@ -1,6 +1,14 @@
 What's new
 ==========
 
+Version 1.2.2 (unreleased)
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- add explicit UTF-8 encoding when reading project files (fix Windows build with non-ASCII paths)
+- add Python 3.12 to CI matrix
+- upgrade GitHub Actions (checkout@v4, setup-python@v5)
+- add community maintenance note to README
+
 Version 1.2.1 (2024-07-14)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 

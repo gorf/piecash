@@ -1,6 +1,10 @@
 piecash
 =======
 
+.. note::
+   **Maintenance**: This is a community-maintained fork of piecash. It will continue to receive bug fixes and compatibility updates.
+   The original project has limited maintenance. Issues and PRs are welcome. `Original repo <https://github.com/sdementen/piecash>`__
+
 .. image:: https://badges.gitter.im/sdementen/piecash.svg
    :alt: Join the chat at https://gitter.im/sdementen/piecash
    :target: https://gitter.im/sdementen/piecash?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge

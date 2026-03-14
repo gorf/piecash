@@ -1,5 +1,10 @@
-Some note for developers:
--------------------------
+Developer Notes
+===============
+
+This is a community-maintained fork. See README for the original project link.
+
+Development Setup
+-----------------
 
 - to prepare a virtualenv for dev purposes::
 
@@ -47,3 +52,10 @@ Some note for developers:
     3. git flow release finish
     4. checkout master branch in git
     5. python setup.py sdist upload
+
+Maintenance (fork)
+-----------------
+
+- Run tests locally: ``pytest tests/ -v`` (exclude ``test_integration.py`` if no Postgres/MySQL)
+- Check dependencies: ``pip install pip-audit && pip-audit``
+- For PyPI release without original maintainer access, consider publishing as ``piecash-community``

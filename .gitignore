@@ -44,3 +44,8 @@ pip-log.txt
 /data/
 /pg_data/
 /.env
+
+# test artifacts
+tests/foozbar.sqlite
+tests/foofailzbar.sqlite
+tests/*.gnucash
