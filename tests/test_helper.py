@@ -244,7 +244,7 @@ def new_book(request):
     if name and database_exists(name):
         safe_drop_database(name)
 
-    with create_book(uri_conn=name, keep_foreign_keys=False) as b:
+    with create_book(uri_conn=name, currency="EUR", keep_foreign_keys=False) as b:
         yield b
 
     if name and database_exists(name):

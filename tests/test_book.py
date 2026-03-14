@@ -168,8 +168,8 @@ class TestBook_open_book(object):
         with pytest.raises(GnucashException):
             b = open_book(uri_conn=book_uri)
 
-        # create book
-        with create_book(uri_conn=book_uri):
+        # create book (currency=EUR for deterministic tests across locales)
+        with create_book(uri_conn=book_uri, currency="EUR"):
             pass
 
         # assert error if both sqlite_file and uri_conn are defined on open_book
@@ -195,8 +195,8 @@ class TestBook_open_book(object):
             open_book(uri_conn=book_uri_fail, check_exists=False)
 
     def test_open_RW_backup(self, book_uri):
-        # create book
-        with create_book(uri_conn=book_uri) as b:
+        # create book (currency=EUR for deterministic tests across locales)
+        with create_book(uri_conn=book_uri, currency="EUR") as b:
             engine_type = b.session.bind.name
 
         # open book with readonly = False (ie RW)
@@ -226,8 +226,8 @@ class TestBook_open_book(object):
             assert len(glob.glob("{}.[0-9]*.gnucash".format(url))) == 1
 
     def test_open_lock(self, book_uri):
-        # create book and set a lock
-        with create_book(uri_conn=book_uri) as b:
+        # create book and set a lock (currency=EUR for deterministic tests across locales)
+        with create_book(uri_conn=book_uri, currency="EUR") as b:
             b.session.create_lock()
             b.save()
 

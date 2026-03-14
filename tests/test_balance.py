@@ -99,8 +99,8 @@ def test_get_historical_balance(book_historical_prices):
     assert assets.get_balance(commodity=eur, at_date=date.today(), use_historical=True, recurse=True) \
            == assets.get_balance(commodity=eur, use_historical=False, recurse=True)
 
-    # Can't find
+    # Can't find (use date when egp_cash has non-zero balance; no EGP-EUR prices exist)
     with pytest.raises(GncConversionError):
-        egp_cash.get_balance(commodity=eur, at_date=date(2020, 1, 2), use_historical=True)
+        egp_cash.get_balance(commodity=eur, at_date=date(2021, 12, 19), use_historical=True)
 
 

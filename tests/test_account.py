@@ -297,5 +297,6 @@ class TestAccount_features(object):
                 assert split["lot-split/date"].value.date() == datetime.today().date()
                 assert split["lot-split/peer_guid"].value in tr4.splits
 
-        assert xyz_account["lot-mgmt/gains-acct/CURRENCY::EUR"].value == new_book.accounts(name="Orphaned Gains-EUR")
+        gains_acct_key = "{0.namespace}::{0.mnemonic}".format(EUR)
+        assert xyz_account["lot-mgmt/gains-acct/"+gains_acct_key].value == new_book.accounts(name="Orphaned Gains-"+EUR.mnemonic)
         assert xyz_account["lot-mgmt/next-id"].value == 3

@@ -7,8 +7,8 @@ from decimal import Decimal
 @pytest.fixture 
 def book():
     #creates a basic book for test purposes
-    #create an empty in-memory book
-    book = piecash.create_book()
+    #create an empty in-memory book (currency=EUR for deterministic tests across locales)
+    book = piecash.create_book(currency="EUR")
 
     #get the default currency
     default_currency = book.currencies[0]
@@ -243,8 +243,8 @@ def test_add_terms(book_with_billterms):
 
 def test_add_terms2(book):
     #try adding a billterm with non-existing type
-    with pytest.raises(TypeError):
-        aterm = piecash.business.invoice.Billterm("termday", term_type='no existing type')
+    with pytest.raises(ValueError):
+        piecash.business.invoice.Billterm("termday", term_type='no existing type')
 
     #add two terms with same name
     aterm1 = piecash.business.invoice.Billterm("termday", book=book)
