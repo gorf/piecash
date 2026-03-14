@@ -26,6 +26,7 @@ Version 1.2.2 (unreleased)
 - fix test_scrub lots ordering: sort by (quantity, -val) for deterministic assertion across DB backends
 - fix Unicode in tests: use UTF-8 and \\u escapes for ïoà (test_create_cdtytransaction_tradingaccount)
 - reduce CI warnings: Inspector.from_engine -> inspect(), _DateAsDateTime.cache_ok=True, silence getdefaultlocale deprecation
+- pytest.ini: filter SAWarning and RemovedIn20Warning for cleaner CI output
 
 Version 1.2.1 (2024-07-14)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
