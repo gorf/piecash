@@ -193,8 +193,8 @@ class Book(DeclarativeBaseGuid):
         if commodity is not None:
             return commodity
         # Non-mutating fallback for old books / XML-to-SQL conversions (issue #251)
-        inferred = self._find_common_currency()
-        return inferred
+        # Aligns with GnuCash find_root_currency() in libgnucash/engine/Scrub.cpp
+        return self._find_root_currency()
 
     @default_currency.setter
     def default_currency(self, value):
@@ -202,8 +202,22 @@ class Book(DeclarativeBaseGuid):
 
         self.root_account.commodity = value
 
-    def _find_common_currency(self):
-        """Return the most common CURRENCY commodity, or None. Does not mutate the book."""
+    def _find_root_currency(self):
+        """
+        Infer book currency the way GnuCash does (find_root_currency in Scrub.cpp):
+
+        1. Prefer the commodity of the first top-level INCOME account
+        2. Else fall back to the most common CURRENCY among accounts
+        3. Else any CURRENCY commodity in the book
+
+        Does not mutate the book.
+        """
+        # GnuCash: first top-level INCOME child of root
+        for child in self.root_account.children:
+            if child.type == "INCOME" and child.commodity is not None:
+                if child.commodity.namespace == "CURRENCY":
+                    return child.commodity
+
         counts = Counter()
         by_mnemonic = {}
         for acc in self.session.query(Account).all():
@@ -223,15 +237,17 @@ class Book(DeclarativeBaseGuid):
 
     def infer_default_currency(self):
         """
-        Infer and set the root account currency from the most common account currency.
+        Infer and set the root account currency (GnuCash-compatible fallback).
 
         Useful for books where the root commodity was never set (e.g. old files or
-        XML-to-SQL conversions). See https://github.com/sdementen/piecash/issues/251
+        XML-to-SQL conversions). Mirrors GnuCash find_root_currency(): prefer the
+        first top-level INCOME account currency, then fall back to other currencies
+        in the book. See https://github.com/sdementen/piecash/issues/251
 
         :return: the :class:`Commodity` that was set as default currency
         :raises GnucashException: if no CURRENCY commodity can be found
         """
-        currency = self._find_common_currency()
+        currency = self._find_root_currency()
         if currency is None:
             raise GnucashException(
                 "Cannot infer default currency: no CURRENCY commodities found "

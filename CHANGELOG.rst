@@ -28,7 +28,7 @@ Version 1.2.2 (unreleased)
 - fix Unicode in tests: use UTF-8 and \\u escapes for ïoà (test_create_cdtytransaction_tradingaccount)
 - reduce CI warnings: Inspector.from_engine -> inspect(), _DateAsDateTime.cache_ok=True, silence getdefaultlocale deprecation
 - pytest.ini: filter SAWarning and RemovedIn20Warning for cleaner CI output
-- warn and allow inferring default currency when root account has none (fix #251)
+- warn and allow inferring default currency when root account has none (fix #251; GnuCash-compatible fallback via first top-level INCOME)
 - splits_df: tolerate splits with missing account instead of crashing (fix #211)
 - Compat: allow registry() without _bind for SQLAlchemy 2.0
 

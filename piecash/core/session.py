@@ -465,8 +465,8 @@ def open_book(
     if book.root_account is not None and book.root_account.commodity is None:
         warnings.warn(
             "Root account has no commodity/currency set; book.default_currency will "
-            "fall back to the most common account currency until you set it or call "
-            "book.infer_default_currency() to persist a fix. "
+            "fall back (GnuCash-style: first top-level INCOME, then other currencies) "
+            "until you set it or call book.infer_default_currency() to persist a fix. "
             "See https://github.com/sdementen/piecash/issues/251",
             UserWarning,
             stacklevel=2,

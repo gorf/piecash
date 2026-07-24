@@ -454,7 +454,7 @@ class TestBook_access_book(object):
         )
         new_book.session.expire_all()
 
-        # Cleared root: property falls back to common currency without mutating
+        # Cleared root: property falls back without mutating (empty book ? CURRENCY in table)
         assert new_book.root_account.commodity is None
         assert new_book.default_currency.mnemonic == cur.mnemonic
 
@@ -462,6 +462,46 @@ class TestBook_access_book(object):
         assert inferred.mnemonic == cur.mnemonic
         assert new_book.root_account.commodity.mnemonic == cur.mnemonic
         assert new_book.default_currency.mnemonic == cur.mnemonic
+
+    def test_infer_default_currency_prefers_top_level_income(self, new_book):
+        """GnuCash find_root_currency: prefer first top-level INCOME (issue #251)."""
+        from sqlalchemy import text
+        from piecash import factories
+
+        eur = new_book.default_currency
+        usd = factories.create_currency_from_ISO("USD")
+        new_book.add(usd)
+
+        # Many USD asset accounts, one EUR income ? GnuCash still prefers INCOME
+        Account(
+            name="Cash USD",
+            type="ASSET",
+            commodity=usd,
+            parent=new_book.root_account,
+        )
+        Account(
+            name="Bank USD",
+            type="BANK",
+            commodity=usd,
+            parent=new_book.root_account,
+        )
+        Account(
+            name="Income",
+            type="INCOME",
+            commodity=eur,
+            parent=new_book.root_account,
+        )
+        new_book.flush()
+
+        new_book.session.execute(
+            text("UPDATE accounts SET commodity_guid = NULL WHERE guid = :g"),
+            {"g": new_book.root_account.guid},
+        )
+        new_book.session.expire_all()
+
+        assert new_book.root_account.commodity is None
+        assert new_book.default_currency.mnemonic == "EUR"
+        assert new_book.infer_default_currency().mnemonic == "EUR"
 
     def test_open_book_warns_missing_root_currency(self, book_uri):
         """open_book emits a UserWarning when root commodity is missing (issue #251)."""
