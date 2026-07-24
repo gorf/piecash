@@ -419,6 +419,67 @@ class TestBook_access_book(object):
 
         assert df_to_string == df.to_string()
 
+    def test_splits_df_orphan_account(self, book_transactions):
+        """splits_df must not crash when a split's account is missing (issue #211)."""
+        from sqlalchemy import text
+
+        orphan = book_transactions.splits[0]
+        orphan_guid = orphan.guid
+        # Simulate a dangling account reference (e.g. deleted account / broken FK)
+        book_transactions.session.execute(
+            text(
+                "UPDATE splits SET account_guid = :bad WHERE guid = :guid"
+            ),
+            {"bad": "0" * 32, "guid": orphan_guid},
+        )
+        book_transactions.session.expire_all()
+
+        df = book_transactions.splits_df()
+        assert orphan_guid in df.index
+        import pandas as pd
+
+        assert pd.isna(df.loc[orphan_guid, "account.fullname"])
+        assert pd.isna(df.loc[orphan_guid, "account.commodity.mnemonic"])
+
+    def test_missing_root_currency_and_infer(self, new_book):
+        """Root without commodity: clear error + infer_default_currency (issue #251)."""
+        from sqlalchemy import text
+
+        cur = new_book.root_account.commodity
+        assert cur is not None
+        # Clear via SQL: ORM assignment to None would delete-orphan the Account
+        new_book.session.execute(
+            text("UPDATE accounts SET commodity_guid = NULL WHERE guid = :g"),
+            {"g": new_book.root_account.guid},
+        )
+        new_book.session.expire_all()
+
+        # Cleared root: property falls back to common currency without mutating
+        assert new_book.root_account.commodity is None
+        assert new_book.default_currency.mnemonic == cur.mnemonic
+
+        inferred = new_book.infer_default_currency()
+        assert inferred.mnemonic == cur.mnemonic
+        assert new_book.root_account.commodity.mnemonic == cur.mnemonic
+        assert new_book.default_currency.mnemonic == cur.mnemonic
+
+    def test_open_book_warns_missing_root_currency(self, book_uri):
+        """open_book emits a UserWarning when root commodity is missing (issue #251)."""
+        from sqlalchemy import text
+
+        with create_book(uri_conn=book_uri, currency="EUR", overwrite=True) as b:
+            root_guid = b.root_account.guid
+            b.session.execute(
+                text("UPDATE accounts SET commodity_guid = NULL WHERE guid = :g"),
+                {"g": root_guid},
+            )
+            b.save()
+
+        with pytest.warns(UserWarning, match="Root account has no commodity"):
+            with open_book(uri_conn=book_uri, open_if_lock=True) as b:
+                inferred = b.infer_default_currency()
+                assert inferred.mnemonic == "EUR"
+
     def test_splits_df_with_additional(self, book_transactions):
         # Adding in two additional memo fields here. If it works for non-unique it should
         # be fine for unique fields.

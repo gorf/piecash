@@ -1,4 +1,4 @@
-from collections import defaultdict
+from collections import Counter, defaultdict
 from operator import attrgetter
 
 from sqlalchemy import Column, VARCHAR, ForeignKey, inspect
@@ -14,6 +14,21 @@ from .._common import CallableList, GnucashException
 from .._declbase import DeclarativeBaseGuid
 from ..business.invoice import Invoice, Bill, Expensevoucher
 from ..sa_extra import kvp_attribute
+
+
+def _safe_attrgetter(field):
+    """Like operator.attrgetter, but return None if any intermediate attribute is None."""
+
+    parts = field.split(".")
+
+    def getter(obj):
+        for part in parts:
+            if obj is None:
+                return None
+            obj = getattr(obj, part, None)
+        return obj
+
+    return getter
 
 class Book(DeclarativeBaseGuid):
     """
@@ -174,13 +189,57 @@ class Book(DeclarativeBaseGuid):
 
     @property
     def default_currency(self):
-        return self.root_account.commodity
+        commodity = self.root_account.commodity
+        if commodity is not None:
+            return commodity
+        # Non-mutating fallback for old books / XML-to-SQL conversions (issue #251)
+        inferred = self._find_common_currency()
+        return inferred
 
     @default_currency.setter
     def default_currency(self, value):
         assert isinstance(value, Commodity) and value.namespace == "CURRENCY"
 
         self.root_account.commodity = value
+
+    def _find_common_currency(self):
+        """Return the most common CURRENCY commodity, or None. Does not mutate the book."""
+        counts = Counter()
+        by_mnemonic = {}
+        for acc in self.session.query(Account).all():
+            cdty = acc.commodity
+            if cdty is not None and cdty.namespace == "CURRENCY":
+                counts[cdty.mnemonic] += 1
+                by_mnemonic[cdty.mnemonic] = cdty
+
+        if not counts:
+            for cdty in self.session.query(Commodity).filter_by(namespace="CURRENCY"):
+                counts[cdty.mnemonic] += 1
+                by_mnemonic[cdty.mnemonic] = cdty
+
+        if not counts:
+            return None
+        return by_mnemonic[counts.most_common(1)[0][0]]
+
+    def infer_default_currency(self):
+        """
+        Infer and set the root account currency from the most common account currency.
+
+        Useful for books where the root commodity was never set (e.g. old files or
+        XML-to-SQL conversions). See https://github.com/sdementen/piecash/issues/251
+
+        :return: the :class:`Commodity` that was set as default currency
+        :raises GnucashException: if no CURRENCY commodity can be found
+        """
+        currency = self._find_common_currency()
+        if currency is None:
+            raise GnucashException(
+                "Cannot infer default currency: no CURRENCY commodities found "
+                "in the book"
+            )
+
+        self.root_account.commodity = currency
+        return currency
 
     def validate(self):
         Book.validate_book(self.session)
@@ -606,7 +665,8 @@ class Book(DeclarativeBaseGuid):
             "account.commodity.guid",
             "account.commodity.mnemonic",
         ] + additional_fields
-        fields_getter = [attrgetter(fld) for fld in fields]
+        # Use safe getters so orphan splits (account is None) do not crash (issue #211)
+        fields_getter = [_safe_attrgetter(fld) for fld in fields]
         df_splits = pandas.DataFrame(
             [[fg(sp) for fg in fields_getter] for sp in splits], columns=fields
         )

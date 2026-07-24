@@ -3,6 +3,7 @@ import locale
 import os
 import shutil
 import socket
+import warnings
 from collections import defaultdict
 
 from sqlalchemy import event, Column, VARCHAR, INTEGER, Table, PrimaryKeyConstraint
@@ -459,6 +460,17 @@ def open_book(
 
     book = s.query(Book).one()
     adapt_session(s, book=book, readonly=readonly)
+
+    # Old books / XML-to-SQL conversions may leave the root account without a currency
+    if book.root_account is not None and book.root_account.commodity is None:
+        warnings.warn(
+            "Root account has no commodity/currency set; book.default_currency will "
+            "fall back to the most common account currency until you set it or call "
+            "book.infer_default_currency() to persist a fix. "
+            "See https://github.com/sdementen/piecash/issues/251",
+            UserWarning,
+            stacklevel=2,
+        )
 
     return book
 
