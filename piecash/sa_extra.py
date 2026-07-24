@@ -47,7 +47,21 @@ try:
             kw.pop("constructor", _declarative_constructor),
         )
 
-        return registry(_bind=bind, metadata=metadata, class_registry=class_registry, constructor=constructor).as_declarative_base(**kw)
+        # SQLAlchemy 1.4: registry(_bind=...); SQLAlchemy 2.0: `_bind` removed.
+        try:
+            reg = registry(
+                _bind=bind,
+                metadata=metadata,
+                class_registry=class_registry,
+                constructor=constructor,
+            )
+        except TypeError:
+            reg = registry(
+                metadata=metadata,
+                class_registry=class_registry,
+                constructor=constructor,
+            )
+        return reg.as_declarative_base(**kw)
 
 except ImportError:
     # `as_declarative` was under `sqlalchemy.ext.declarative` prior to 1.4
